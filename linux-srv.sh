@@ -9,7 +9,7 @@ echo "Initializing..."
 #### Functions
 ## DETECT OS
 function os_detect {
-   eval $(cat /etc/os-release | head -n 1)
+   NAME=$(lsb_release -i | cut -c 17-)
    echo "Detected OS: $NAME"
    sleep 1
    case $NAME in
