@@ -80,7 +80,7 @@ network:
         via: $DEFG
       nameservers:
         addresses: [$DNS1, $DNS2]
-  version: 2" > 00-installer-config.yaml
+  version: 2" > /etc/netplan/00-installer-config.yaml
    echo " "
    echo "Here's the IP Address file (/etc/netplan/00-installer-config.yaml):"
    cat /etc/netplan/00-installer-config.yaml
