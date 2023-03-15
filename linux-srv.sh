@@ -56,8 +56,8 @@ iface enp0s3 inet static
         gateway $DEFG
 " > /etc/network/interfaces
    echo " "
-   echo "Here's the IP Address file (/etc/network/interfaces):"
-   cat /etc/network/interfaces
+   echo "Here's the temporary IP Address file (/tmp/interfaces):"
+   cat /tmp/interfaces
    read -p "Press any key to continue..."
 }
 
@@ -80,10 +80,10 @@ network:
         via: $DEFG
       nameservers:
         addresses: [$DNS1, $DNS2]
-  version: 2" > /etc/netplan/00-installer-config.yaml
+  version: 2" > /tmp/00-installer-config.yaml
    echo " "
-   echo "Here's the IP Address file (/etc/netplan/00-installer-config.yaml):"
-   cat /etc/netplan/00-installer-config.yaml
+   echo "Here's the temporary IP Address file (/tmp/00-installer-config.yaml):"
+   cat /tmp/00-installer-config.yaml
    read -p "Press any key to continue..."
 }
 
@@ -109,10 +109,11 @@ while true
       echo "2) DHCP"
       echo "3) DNS"
       echo "4) WAZUH"
-      echo "5) EXIT"
+      echo "5) APPLY CHANGES"
+      echo "6) EXIT"
       read -p "Choose an option: " SEL
             case $SEL in
-                1) if [ $OS == debian ]
+               1) if [ $OS == debian ]
                      then
                         debian_ip_func
 
@@ -121,22 +122,22 @@ while true
                         ubuntu_ip_func
                   
                   fi
-                   clear
-                   ;;
+                  clear
+                  ;;
                 
-                2) echo "DHCP will work in the future :P"
-                   # dhcp_func
-                   sleep 1
-                   clear
-                   ;;
+               2) echo "DHCP will work in the future :P"
+                  # dhcp_func
+                  sleep 1
+                  clearecho "i'm an idiot"
+                  ;;
 
-                3) echo "DNS will work in the future :P"
-                   # dns_func
-                   sleep 1
-                   clear
-                   ;;
+               3) echo "DNS will work in the future :P"
+                  # dns_func
+                  sleep 1
+                  clear
+                  ;;
 
-                4) read -p "Are you sure you want to install (y/n): " YN
+               4) read -p "Are you sure you want to install (y/n): " YN
                      case $YN in
                         [Yy]*) echo "Proceeding..."
                                sleep 1
@@ -147,14 +148,24 @@ while true
                                sleep 1
                                ;;
                      esac
-                   clear
-                   ;;
+                  clear
+                  ;;
 
-                5) echo "Bye Bye :)"
-                   exit
-                   ;;
+               5) echo "You need Admin priviledges to apply changes"
+                  sudo ls ##########################################################
+                  read -p "Press any key to continue... "
+                  clear
+                  ;;
+
+               6) echo "Cleaning up..."
+                  rm /tmp/interfaces 2>/dev/null
+                  rm /tmp/00-installer-config.yaml 2>/dev/null
+                  sleep 1
+                  echo "Bye Bye :)"
+                  exit
+                  ;;
                
-                *) clear
-                   ;;
+               *) clear
+                  ;;
             esac
    done
