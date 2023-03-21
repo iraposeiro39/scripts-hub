@@ -9,7 +9,7 @@ echo "Initializing..."
 #### Functions
 ## DETECT OS
 function os_detect {
-   NAME=$(lsb_release -i | cut -c 17-)
+   NAME=$(lsb_release -i | cut -c 17- 2>/dev/null)
    echo "Detected OS: $NAME"
    sleep 1
    case $NAME in
@@ -26,7 +26,47 @@ function os_detect {
          OS=debian
          read -p "Press any key to continue..."
    esac
+}
+
+## EXIT
+function quit {
+   echo "Cleaning up..."
+   rm /tmp/interfaces 2>/dev/null
+   rm /tmp/00-installer-config.yaml 2>/dev/null
    sleep 1
+   echo "Bye Bye :)"
+   exit
+}
+
+## APPLY CHANGES
+function apply {
+   echo "You need Admin priviledges to apply changes"
+   if [ $OS == debian ]
+      then
+         sudo mv /tmp/interfaces /etc/network/interfaces
+      elif [ $OS == ubuntu ]
+                     then
+                        ubuntu_ip_func
+                  
+                  fi
+   sudo ls #########################################################
+   echo "Done!"
+}
+
+## CTRL+C TRAP
+function ctrl_c {
+   while true
+         do
+            read -p "
+Do you wish to exit without saving? (y/n): " YN
+            case $YN in
+                [yY]*)  quit
+                        ;;
+                
+                [nN]*)  break
+                        ;;
+            esac
+         done 
 }
 
 ## DEBIAN IP
@@ -54,7 +94,7 @@ iface enp0s3 inet static
         network $NET
         broadcast $BROADCAST
         gateway $DEFG
-" > /etc/network/interfaces
+" > /tmp/interfaces
    echo " "
    echo "Here's the temporary IP Address file (/tmp/interfaces):"
    cat /tmp/interfaces
@@ -102,6 +142,7 @@ function wazuh_func {
 #### Start
 os_detect
 clear
+trap ctrl_c SIGINT
 while true
    do
       echo "======= LINUX SRV ======="
@@ -109,7 +150,7 @@ while true
       echo "2) DHCP"
       echo "3) DNS"
       echo "4) WAZUH"
-      echo "5) APPLY CHANGES"
+      echo "5) APPLY CHANGES AND EXIT"
       echo "6) EXIT"
       read -p "Choose an option: " SEL
             case $SEL in
@@ -128,7 +169,7 @@ while true
                2) echo "DHCP will work in the future :P"
                   # dhcp_func
                   sleep 1
-                  clearecho "i'm an idiot"
+                  clear
                   ;;
 
                3) echo "DNS will work in the future :P"
@@ -151,18 +192,12 @@ while true
                   clear
                   ;;
 
-               5) echo "You need Admin priviledges to apply changes"
-                  sudo ls ##########################################################
-                  read -p "Press any key to continue... "
+               5) apply
+                  quit
                   clear
                   ;;
 
-               6) echo "Cleaning up..."
-                  rm /tmp/interfaces 2>/dev/null
-                  rm /tmp/00-installer-config.yaml 2>/dev/null
-                  sleep 1
-                  echo "Bye Bye :)"
-                  exit
+               6) quit
                   ;;
                
                *) clear
