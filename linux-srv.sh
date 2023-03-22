@@ -30,7 +30,7 @@ function os_detect {
 
 ## EXIT
 function quit {
-   echo "Cleaning up..."
+   echo "Cleaning up..."   
    rm /tmp/interfaces 2>/dev/null
    rm /tmp/00-installer-config.yaml 2>/dev/null
    sleep 1
@@ -45,11 +45,10 @@ function apply {
       then
          sudo mv /tmp/interfaces /etc/network/interfaces
       elif [ $OS == ubuntu ]
-                     then
-                        ubuntu_ip_func
-                  
-                  fi
-   sudo ls #########################################################
+         then
+            sudo mv /tmp/00-installer-config.yaml /etc/netplan/00-installer-config.yaml
+   
+   fi
    echo "Done!"
 }
 
