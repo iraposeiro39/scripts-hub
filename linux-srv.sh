@@ -132,7 +132,7 @@ function wazuh_func {
    curl -sO https://packages.wazuh.com/4.3/wazuh-install.sh
    chmod +x wazuh-install.sh
    echo "Installing Wazuh..."
-   ./wazuh-install.sh -a &>wazuh.log | tee
+   ./wazuh-install.sh -a | tee ~/wazuh.log
    echo " "
    echo "Wazuh is installed, you will want to check the wazuh.log file for the user password"
    read -p "Press any key to continue..."
