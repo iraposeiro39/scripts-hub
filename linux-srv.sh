@@ -9,10 +9,10 @@ echo "Initializing..."
 #### Functions
 ## DETECT OS
 function os_detect {
-   NAME=$(lsb_release -i | cut -c 17- 2>/dev/null)
-   echo "Detected OS: $NAME"
+   eval $(grep "^ID" /etc/os-release)
+   echo "Detected OS: $ID"
    sleep 1
-   case $NAME in
+   case $ID in
       *?ebian*) echo "Setting up config for Debian..."
                 OS=debian
                 ;;
@@ -31,8 +31,7 @@ function os_detect {
 ## EXIT
 function quit {
    echo "Cleaning up..."   
-   rm /tmp/interfaces 2>/dev/null
-   rm /tmp/00-installer-config.yaml 2>/dev/null
+   rm -fR /tmp/linux-srv 2>/dev/null
    sleep 1
    echo "Bye Bye :)"
    exit
@@ -43,10 +42,10 @@ function apply {
    echo "You need Admin priviledges to apply changes"
    if [ $OS == debian ]
       then
-         sudo mv /tmp/interfaces /etc/network/interfaces
+         sudo mv /tmp/linux-srv/interfaces /etc/network/interfaces
       elif [ $OS == ubuntu ]
          then
-            sudo mv /tmp/00-installer-config.yaml /etc/netplan/00-installer-config.yaml
+            sudo mv /tmp/linux-srv/00-installer-config.yaml /etc/netplan/00-installer-config.yaml
    
    fi
    echo "Done!"
@@ -75,7 +74,7 @@ function debian_ip_func {
    read -p "Network ID: " NET
    read -p "Broadcast: " BROADCAST
    read -p "Default Gateway: " DEFG
-   sudo echo "# This file describes the network interfaces available on your system
+   echo "# This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
 
 source /etc/network/interfaces.d
@@ -93,10 +92,10 @@ iface enp0s3 inet static
         network $NET
         broadcast $BROADCAST
         gateway $DEFG
-" > /tmp/interfaces
+" > /tmp/linux-srv/interfaces
    echo " "
-   echo "Here's the temporary IP Address file (/tmp/interfaces):"
-   cat /tmp/interfaces
+   echo "Here's the temporary IP Address file (/tmp/linux-srv/interfaces):"
+   cat /tmp/linux-srv/interfaces
    read -p "Press any key to continue..."
 }
 
@@ -119,10 +118,10 @@ network:
         via: $DEFG
       nameservers:
         addresses: [$DNS1, $DNS2]
-  version: 2" > /tmp/00-installer-config.yaml
+  version: 2" > /tmp/linux-srv/00-installer-config.yaml
    echo " "
-   echo "Here's the temporary IP Address file (/tmp/00-installer-config.yaml):"
-   cat /tmp/00-installer-config.yaml
+   echo "Here's the temporary IP Address file (/tmp/linux-srv/00-installer-config.yaml):"
+   cat /tmp/linux-srv/00-installer-config.yaml
    read -p "Press any key to continue..."
 }
 
